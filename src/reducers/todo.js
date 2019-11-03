@@ -1,11 +1,11 @@
-import { SET_VISIBILITY_FILTER, ADD_TODO, TOGGLE_TODO } from '../actions';
+import { SET_VISIBILITY_FILTER, ADD_TODO, TOGGLE_TODO, VisibilityFilters } from '../actions';
 
-export function visibilityFilter(state = 'SHOW_ALL', action) {
+export function visibilityFilter(state = VisibilityFilters.SHOW_ALL, action) {
   switch (action.type) {
     case SET_VISIBILITY_FILTER:
-      return action.filter
+      return action.filter;
     default:
-      return state
+      return state;
   }
 }
 
@@ -16,7 +16,7 @@ export function todos(state = [], action) {
         ...state,
         {
           text: action.text,
-          completed: false
+          completed: false,
         }
       ];
     case TOGGLE_TODO:
