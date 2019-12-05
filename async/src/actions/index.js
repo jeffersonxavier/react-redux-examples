@@ -12,7 +12,7 @@ export function invalidateSubreddit(subreddit) {
 
 export const REQUEST_POSTS = 'REQUEST_POSTS';
 
-function requestPosts(subreddit) {
+export function requestPosts(subreddit) {
   return { type: REQUEST_POSTS, subreddit };
 }
 
