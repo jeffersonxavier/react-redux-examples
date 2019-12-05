@@ -1,25 +1,20 @@
 import React from 'react';
+import { createStore, applyMiddleware } from 'redux';
+import thunkMiddleware from 'redux-thunk';
+import { createLogger } from 'redux-logger';
 import { Provider } from 'react-redux';
-import { createStore } from 'redux';
-import { selectSubreddit, invalidateSubreddit, requestPosts, receivePosts } from './actions';
+import { selectSubreddit, fetchPostsIfNeeded } from './actions';
 import rootReducer from './reducers';
 import './App.css';
 
-const store = createStore(rootReducer);
+const loggerMiddleware = createLogger();
+const store = createStore(rootReducer, applyMiddleware(thunkMiddleware, loggerMiddleware));
 
 function App() {
-	console.log('Initial State', store.getState());
-	const unsubscribe = store.subscribe(() => console.log('State on subscribe', store.getState()));
-
-	store.dispatch(selectSubreddit('frontend'));
-	store.dispatch(requestPosts('frontend'));
-	store.dispatch(receivePosts('frontend', { data: { children: [
-		{ data: { id: 1, name: 'subreddit 1' }},
-		{ data: { id: 2, name: 'subreddit 2' }},
-	] } }));
-	store.dispatch(invalidateSubreddit('frontend'));
-	
-	unsubscribe();
+	store.dispatch(selectSubreddit('reactjs'));
+	store
+		.dispatch(fetchPostsIfNeeded('reactjs'))
+		.then(() => console.log(store.getState()));
 
   return (
 		<Provider store={store}>

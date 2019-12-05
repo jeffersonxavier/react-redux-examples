@@ -26,3 +26,48 @@ export function receivePosts(subreddit, json) {
     receivedAt: Date.now()
   };
 }
+
+export function fetchPostsIfNeeded(subreddit) {
+	return function(dispatch, getState) {
+		if (shouldFetchPosts(getState(), subreddit)) {
+			return dispatch(fetchPosts(subreddit));
+		} else {
+			return Promise.resolve();
+		}
+	};
+}
+
+function fetchPosts(subreddit) {
+  return function(dispatch) {
+    dispatch(requestPosts(subreddit));
+
+    /*return fetch(`https://www.reddit.com/r/${subreddit}.json`)
+      .then(
+        response => response.json(),
+        error => console.log('An error occurred.', error)
+      )
+			.then(json => dispatch(receivePosts(subreddit, json)) );*/
+			
+		return new Promise(resolve => {
+			setTimeout(() => {
+				resolve(
+					dispatch(receivePosts(subreddit, { data: { children: [
+						{ data: { id: 1, name: `${subreddit} 1` }},
+						{ data: { id: 2, name: `${subreddit} 2` }},
+					] } }))
+				);
+			}, 2000);
+		});
+  }
+}
+
+function shouldFetchPosts(state, subreddit) {
+  const posts = state.postsBySubreddit[subreddit];
+  if (!posts) {
+    return true;
+  } else if (posts.isFetching) {
+    return false;
+  } else {
+    return posts.didInvalidate;
+  }
+}
